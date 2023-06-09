@@ -2,13 +2,6 @@
   "builds": [{
       "src": "cartoonify_project/wsgi.py",
       "use": "@vercel/python"
-  },
-  {
-    "functions": {
-      "api/**/*.py": {
-        "excludeFiles": "**/*.html"
-      }
-    }
   }],
   "routes": [
       {
