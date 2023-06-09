@@ -3,88 +3,189 @@
 <head>
     <title>Cartoonify Image</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 40px;
+            font-size: 36px;
+            color: #333;
+        }
+
+        form {
+            margin-top: 40px;
+        }
+
+        label {
+            display: block;
+            font-size: 18px;
+            margin-top: 20px;
+            color: #555;
+            text-align: left;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            background-color: #42a5f5;
+            color: #fff;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background-color: #2196f3;
+        }
+
+        .slider-container {
+            margin-top: 20px;
+        }
+
+        .slider {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .slider label {
+            flex-basis: 120px;
+        }
+
+        .slider input[type="range"] {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        .slider span {
+            margin-left: 10px;
+            font-weight: bold;
+            color: #777;
+        }
+
+        .cartoon-image-container {
+            margin-top: 40px;
+        }
+
+        .cartoon-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>Cartoonify Image</h1>
+    <div class="container">
+        <h1>Cartoonify Image</h1>
 
-    <form id="cartoonify-form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" id="image" name="image" accept="image/*" required>
-        <br>
-        <label for="edge-threshold">Edge Threshold:</label>
-        <input type="range" id="edge-threshold" name="edge_threshold" min="1" max="100" value="9">
-        <span id="edge-threshold-value">9</span>
-        <br>
-        <label for="bilateral-d">Bilateral D:</label>
-        <input type="range" id="bilateral-d" name="bilateral_d" min="1" max="20" value="9">
-        <span id="bilateral-d-value">9</span>
-        <br>
-        <label for="bilateral-sigma-color">Bilateral Sigma Color:</label>
-        <input type="range" id="bilateral-sigma-color" name="bilateral_sigma_color" min="1" max="500" value="300">
-        <span id="bilateral-sigma-color-value">300</span>
-        <br>
-        <label for="bilateral-sigma-space">Bilateral Sigma Space:</label>
-        <input type="range" id="bilateral-sigma-space" name="bilateral_sigma_space" min="1" max="500" value="300">
-        <span id="bilateral-sigma-space-value">300</span>
-        <br>
-        <button type="submit">Cartoonify</button>
-    </form>
+        <form id="cartoonify-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="image">
+                <input type="file" id="image" name="image" accept="image/*" required>
+                <span class="upload-btn">Upload Image</span>
+            </label>
 
-    <div id="cartoon-image-container">
-        <h2>Cartoonified Image:</h2>
-        <img id="cartoon-image" alt="Cartoonified Image" style="height: 600px;width:600px">
+            <div class="slider-container">
+                <div class="slider">
+                    <label for="edge-threshold">Edge Threshold:</label>
+                    <input type="range" id="edge-threshold" name="edge_threshold" min="1" max="100" value="9">
+                    <span id="edge-threshold-value">9</span>
+                </div>
+
+                <div class="slider">
+                    <label for="bilateral-d">Bilateral D:</label>
+                    <input type="range" id="bilateral-d" name="bilateral_d" min="1" max="20" value="9">
+                    <span id="bilateral-d-value">9</span>
+                </div>
+
+                <div class="slider">
+                    <label for="bilateral-sigma-color">Bilateral Sigma Color:</label>
+                    <input type="range" id="bilateral-sigma-color" name="bilateral_sigma_color" min="1" max="500" value="300">
+                    <span id="bilateral-sigma-color-value">300</span>
+                </div>
+
+                <div class="slider">
+                    <label for="bilateral-sigma-space">Bilateral Sigma Space:</label>
+                    <input type="range" id="bilateral-sigma-space" name="bilateral_sigma_space" min="1" max="500" value="300">
+                    <span id="bilateral-sigma-space-value">300</span>
+                </div>
+            </div>
+
+            <button type="submit" class="upload-btn">Cartoonify</button>
+        </form>
+
+        <div class="cartoon-image-container">
+            <h2>Cartoonified Image:</h2>
+            <img id="cartoon-image" class="cartoon-image" alt="Cartoonified Image">
+        </div>
     </div>
 
     <script>
         $(document).ready(function() {
-        // Slider change event handlers
-        $('#edge-threshold').on('input', function() {
-            var value = $(this).val();
-            if (value % 2 === 0) {
-                value++; // Ensure odd number
-                $(this).val(value);
-            }
-            $('#edge-threshold-value').text(value);
-        });
-
-        $('#bilateral-d, #bilateral-sigma-color, #bilateral-sigma-space').on('input', function() {
-            var value = $(this).val();
-            if (value % 2 === 0) {
-                value++; // Ensure odd number
-                $(this).val(value);
-            }
-            $('#' + this.id + '-value').text(value);
-        });
-
-        // Form submit event handler
-        $('#cartoonify-form').on('submit', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: '',
-                type: 'POST',
-                data: new FormData(this),
-                processData: false,
-                contentType: false,
-                xhrFields: {
-                    responseType: 'blob' // Set response type to blob
-                },
-                success: function(response) {
-                    // Read the response as a blob and create an object URL
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        var imgUrl = e.target.result;
-                        // Set the src attribute of the image element
-                        $('#cartoon-image').attr('src', imgUrl);
-                    };
-                    reader.readAsDataURL(response);
-                },
-                error: function(xhr, textStatus, error) {
-                    console.log(xhr.responseText);
+            // Slider change event handlers
+            $('#edge-threshold').on('input', function() {
+                var value = $(this).val();
+                if (value % 2 === 0) {
+                    value++; // Ensure odd number
+                    $(this).val(value);
                 }
+                $('#edge-threshold-value').text(value);
+            });
+
+            $('#bilateral-d, #bilateral-sigma-color, #bilateral-sigma-space').on('input', function() {
+                var value = $(this).val();
+                if (value % 2 === 0) {
+                    value++; // Ensure odd number
+                    $(this).val(value);
+                }
+                $('#' + this.id + '-value').text(value);
+            });
+
+            // Form submit event handler
+            $('#cartoonify-form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    xhrFields: {
+                        responseType: 'blob' // Set response type to blob
+                    },
+                    success: function(response) {
+                        // Read the response as a blob and create an object URL
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            var imgUrl = e.target.result;
+                            // Set the src attribute of the image element
+                            $('#cartoon-image').attr('src', imgUrl);
+                        };
+                        reader.readAsDataURL(response);
+                    },
+                    error: function(xhr, textStatus, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
             });
         });
-    });
-
     </script>
 </body>
 </html>
