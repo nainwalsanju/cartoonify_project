@@ -1,0 +1,11 @@
+__pycache__/
+.direnv/
+node_modules/
+.envrc
+*.sqlite3
+vercel.json
+README.md
+yarn.lock
+.env
+env
+installation.txt
