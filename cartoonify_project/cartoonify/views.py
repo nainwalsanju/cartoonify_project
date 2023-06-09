@@ -2,27 +2,37 @@ import cv2
 import numpy as np
 from django.shortcuts import render
 import base64
+import io
+from django.http import HttpResponse
 
 def cartoonify(request):
     if request.method == 'POST':
-        image = request.FILES['image']
-        img = cv2.imdecode(np.fromstring(image.read(), np.uint8), cv2.IMREAD_COLOR)
-        
-        # 1) Edges
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        blur = cv2.medianBlur(gray, 7)
-        edges = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 9)
-        
-        # 2) Color
-        color = cv2.bilateralFilter(img, d=9, sigmaColor=300, sigmaSpace=300)
-        
-        # 3) Cartoon
-        cartoon = cv2.bitwise_and(color, color, mask=edges)
-        
-        _, img_encoded = cv2.imencode('.jpg', cartoon)
-        img_data = img_encoded.tobytes()
-        cartoon_data_url = f"data:image/jpeg;base64,{base64.b64encode(img_data).decode('utf-8')}"
-        print("loaaded")
-        return render(request, 'cartoonify/cartoonify.html', {'cartoon_data_url': cartoon_data_url})
-    
+        image = request.FILES.get('image')
+        if image:
+            img = cv2.imdecode(np.frombuffer(image.read(), np.uint8), cv2.IMREAD_COLOR)
+
+            # Get slider values
+            edge_threshold = int(request.POST.get('edge_threshold', 9))
+            bilateral_d = int(request.POST.get('bilateral_d', 9))
+            bilateral_sigma_color = int(request.POST.get('bilateral_sigma_color', 300))
+            bilateral_sigma_space = int(request.POST.get('bilateral_sigma_space', 300))
+
+            # 1) Edges
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            blur = cv2.medianBlur(gray, edge_threshold)
+            edges = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, bilateral_d, bilateral_d)
+
+            # 2) Color
+            color = cv2.bilateralFilter(img, d=bilateral_d, sigmaColor=bilateral_sigma_color, sigmaSpace=bilateral_sigma_space)
+
+            # 3) Cartoon
+            cartoon = cv2.bitwise_and(color, color, mask=edges)
+
+            # Convert the cartoonified image to JPEG format
+            _, img_encoded = cv2.imencode('.jpg', cartoon)
+            img_data = img_encoded.tobytes()
+
+            # Send the image data as a response
+            return HttpResponse(img_data, content_type='image/jpeg')
+
     return render(request, 'cartoonify/cartoonify.html')

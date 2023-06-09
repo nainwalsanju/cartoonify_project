@@ -2,21 +2,89 @@
 <html>
 <head>
     <title>Cartoonify Image</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
     <h1>Cartoonify Image</h1>
 
-    <form method="post" enctype="multipart/form-data">
+    <form id="cartoonify-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="image" accept="image/*" required>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        <br>
+        <label for="edge-threshold">Edge Threshold:</label>
+        <input type="range" id="edge-threshold" name="edge_threshold" min="1" max="100" value="9">
+        <span id="edge-threshold-value">9</span>
+        <br>
+        <label for="bilateral-d">Bilateral D:</label>
+        <input type="range" id="bilateral-d" name="bilateral_d" min="1" max="20" value="9">
+        <span id="bilateral-d-value">9</span>
+        <br>
+        <label for="bilateral-sigma-color">Bilateral Sigma Color:</label>
+        <input type="range" id="bilateral-sigma-color" name="bilateral_sigma_color" min="1" max="500" value="300">
+        <span id="bilateral-sigma-color-value">300</span>
+        <br>
+        <label for="bilateral-sigma-space">Bilateral Sigma Space:</label>
+        <input type="range" id="bilateral-sigma-space" name="bilateral_sigma_space" min="1" max="500" value="300">
+        <span id="bilateral-sigma-space-value">300</span>
+        <br>
         <button type="submit">Cartoonify</button>
     </form>
 
-    {% if cartoon_data_url %}
-        {% comment %} <h2>Original Image:</h2>
-        <img src="{{ cartoon_data_url }}" alt="Original Image"> {% endcomment %}
+    <div id="cartoon-image-container">
         <h2>Cartoonified Image:</h2>
-        <img style="height:30%; width:40%" src="{{ cartoon_data_url }}" alt="Cartoonified Image">
-    {% endif %}
+        <img id="cartoon-image" alt="Cartoonified Image" style="height: 600px;width:600px">
+    </div>
+
+    <script>
+        $(document).ready(function() {
+        // Slider change event handlers
+        $('#edge-threshold').on('input', function() {
+            var value = $(this).val();
+            if (value % 2 === 0) {
+                value++; // Ensure odd number
+                $(this).val(value);
+            }
+            $('#edge-threshold-value').text(value);
+        });
+
+        $('#bilateral-d, #bilateral-sigma-color, #bilateral-sigma-space').on('input', function() {
+            var value = $(this).val();
+            if (value % 2 === 0) {
+                value++; // Ensure odd number
+                $(this).val(value);
+            }
+            $('#' + this.id + '-value').text(value);
+        });
+
+        // Form submit event handler
+        $('#cartoonify-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '',
+                type: 'POST',
+                data: new FormData(this),
+                processData: false,
+                contentType: false,
+                xhrFields: {
+                    responseType: 'blob' // Set response type to blob
+                },
+                success: function(response) {
+                    // Read the response as a blob and create an object URL
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var imgUrl = e.target.result;
+                        // Set the src attribute of the image element
+                        $('#cartoon-image').attr('src', imgUrl);
+                    };
+                    reader.readAsDataURL(response);
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+    </script>
 </body>
 </html>
