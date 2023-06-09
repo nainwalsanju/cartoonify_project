@@ -1,0 +1,12 @@
+1. install python > 3.9
+
+2. create a virtual env
+    python -m venv cartoonify
+3. activate the environment
+    /cartoonify/Scripts/activate.bat
+4. install required dependencies from requirements.txt
+    pip install -r requirements.txt
+5. change directory to cartoonify_project
+    cd cartoonify_project
+6. run the project
+    python manage.py runserver
