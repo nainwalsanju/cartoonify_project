@@ -10,7 +10,7 @@ def cartoonify(request):
         
         # 1) Edges
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        blur = cv2.medianBlur(gray, 5)
+        blur = cv2.medianBlur(gray, 7)
         edges = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 9)
         
         # 2) Color
