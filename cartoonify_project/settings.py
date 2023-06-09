@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'cartoonify',
-    'django.contrib.staticfiles',
 ]
 
 MIDDLEWARE = [
