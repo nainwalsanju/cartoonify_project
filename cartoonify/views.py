@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 from django.shortcuts import render
-import base64
-import io
 from django.http import HttpResponse
+from django.views.decorators.cache import cache_page
 
+@cache_page(60 * 15)
 def cartoonify(request):
     if request.method == 'POST':
         image = request.FILES.get('image')
