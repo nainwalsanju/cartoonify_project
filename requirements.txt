@@ -1,0 +1,3 @@
+Django
+opencv-python 
+numpy
