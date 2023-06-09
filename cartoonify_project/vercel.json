@@ -1,0 +1,14 @@
+{
+    "builds": [
+      {
+        "src": "cartoonify/wsgi.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "cartoonify/wsgi.py"
+      }
+    ]
+}
