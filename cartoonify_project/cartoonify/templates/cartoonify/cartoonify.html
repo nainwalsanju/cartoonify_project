@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cartoonify Image</title>
+</head>
+<body>
+    <h1>Cartoonify Image</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Cartoonify</button>
+    </form>
+
+    {% if cartoon_data_url %}
+        {% comment %} <h2>Original Image:</h2>
+        <img src="{{ cartoon_data_url }}" alt="Original Image"> {% endcomment %}
+        <h2>Cartoonified Image:</h2>
+        <img src="{{ cartoon_data_url }}" alt="Cartoonified Image">
+    {% endif %}
+</body>
+</html>
