@@ -1,13 +1,19 @@
 {
-    "builds": [{
-        "src": "cartoonify_project/wsgi.py",
-        "use": "@ardnt/vercel-python-wsgi",
-        "config": { "maxLambdaSize": "15mb" }
-    }],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "cartoonify_project/wsgi.py"
-        }
-    ]
+  "builds": [{
+      "src": "cartoonify_project/wsgi.py",
+      "use": "@vercel/python"
+  },
+  {
+    "functions": {
+      "api/**/*.py": {
+        "excludeFiles": "**/*.html"
+      }
+    }
+  }],
+  "routes": [
+      {
+          "src": "/(.*)",
+          "dest": "cartoonify_project/wsgi.py"
+      }
+  ]
 }
