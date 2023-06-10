@@ -1,14 +1,29 @@
 {
   "builds": [
-    {"src": "cartoonify_project/wsgi.py","use": "@vercel/python","config": { "maxLambdaSize": "15mb", "runtime": "python" }},
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "*.py", "use": "@vercel/python" }
-    
-    ],
-  "routes": [
-      {
-          "src": "/(.*)",
-          "dest": "cartoonify_project/wsgi.py"
+    {
+      "src": "cartoonify_project/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.10"
       }
+    },
+    {
+      "src": "build.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles_build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "cartoonify_project/wsgi.py"
+    }
   ]
 }
