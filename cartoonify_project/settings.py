@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-m6b2zydk7+2nu8+7lig38*ibv!&6$p@(7@*=krp^%-%ahgaaq%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', '.now.sh']
 
 
 # Application definition
@@ -36,8 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cartoonify',
     'django.contrib.staticfiles',
+    'cartoonify',
 ]
 
 MIDDLEWARE = [
@@ -75,10 +75,6 @@ WSGI_APPLICATION = 'cartoonify_project.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
 }
 
 

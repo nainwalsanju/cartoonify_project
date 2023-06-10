@@ -1,8 +1,6 @@
 import cv2
 import numpy as np
 from django.shortcuts import render
-import base64
-import io
 from django.http import HttpResponse
 
 def cartoonify(request):
