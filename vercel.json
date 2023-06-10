@@ -1,9 +1,10 @@
 {
-  "builds": [{
-      "src": "cartoonify_project/wsgi.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
-  }],
+  "builds": [
+    {"src": "cartoonify_project/wsgi.py","use": "@vercel/python","config": { "maxLambdaSize": "15mb", "runtime": "python" }},
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.py", "use": "@vercel/python" }
+    
+    ],
   "routes": [
       {
           "src": "/(.*)",
